@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bossciara</title>
+
+    <style>
+      :root {
+        --pink0: rgb(255, 240, 240);
+        --pink1: rgb(255, 200, 200);
+        --pink1b: rgb(255, 190, 195);
+        --pink1-shadow: rgb(190, 115, 125);
+        --pink2: rgb(210, 80, 135);
+        --pink2-shadow: rgb(130, 35, 75);
+        --pink-gray: rgba(130, 35, 75, 0.22);
+        --gold-shadow: rgb(200, 160, 0);
+        --paper: rgb(255, 250, 235);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        min-height: 100%;
+      }
+
+      body {
+        min-height: 100dvh;
+        margin: 0;
+        padding: 40px 16px;
+        background:
+          radial-gradient(circle at 15% 15%, white 0, transparent 35%),
+          var(--pink0);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-family: Arial, sans-serif;
+        color: var(--pink2-shadow);
+      }
+
+      button,
+      textarea {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+        transition:
+          background-color 0.2s ease,
+          box-shadow 0.2s ease,
+          transform 0.2s ease;
+      }
+
+      button:focus-visible,
+      textarea:focus-visible {
+        outline: 3px solid var(--pink2);
+        outline-offset: 4px;
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+      }
+
+      .gift-panel {
+        position: fixed;
+        text-align: center;
+        z-index: 2;
+        cursor: pointer;
+      }
+
+      .gift {
+        position: relative;
+        width: min(300px, 75vw);
+        aspect-ratio: 1;
+        filter: drop-shadow(0 10px 12px var(--pink-gray));
+      }
+
+      .gift > div {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+      }
+
+      .gift-lid {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 45%;
+        z-index: 3;
+      }
+
+      .gift-ribbon {
+        width: 100%;
+        height: 50%;
+        display: flex;
+        justify-content: center;
+        z-index: 3;
+        transform: translateY(15px);
+      }
+
+      .gift-ribbon > div {
+        width: 25%;
+        height: 100%;
+        border: 15px solid var(--pink2);
+      }
+
+      .gift-ribbon-right {
+        border-radius: 50% 50% 50% 5%;
+        transform: rotate(15deg);
+      }
+
+      .gift-ribbon-left {
+        border-radius: 50% 50% 5% 50%;
+        transform: rotate(-15deg);
+      }
+
+      .gift-top {
+        width: 100%;
+        height: 50%;
+        display: flex;
+        justify-content: center;
+        z-index: 1;
+        filter: drop-shadow(0 10px 2px var(--pink-gray));
+      }
+
+      .gift-top > div {
+        width: 50%;
+        height: 100%;
+        background-color: var(--pink1);
+      }
+
+      .gift-top-left {
+        border-radius: 5px 0 0 5px;
+        border-right: 5px solid var(--pink-gray);
+      }
+
+      .gift-top-right {
+        border-radius: 0 5px 5px 0;
+        border-left: 5px solid var(--pink-gray);
+      }
+
+      .gift-bottom {
+        height: 50%;
+        border-radius: 0 0 5px 5px;
+      }
+
+      .gift-bottom > div {
+        width: 50%;
+        height: 100%;
+      }
+
+      .gift-bottom-left,
+      .gift-bottom-right {
+        background: linear-gradient(to bottom, var(--pink1), var(--pink1b));
+      }
+
+      .gift-bottom-left {
+        border-right: 2px solid var(--pink-gray);
+      }
+
+      .gift-bottom-right {
+        border-left: 2px solid var(--pink-gray);
+      }
+
+      .gift-panel p {
+        margin-top: 30px;
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--pink2);
+      }
+
+      .main-content {
+        z-index: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: min(420px, 100%);
+        height: max-content;
+        filter: drop-shadow(0 12px 18px var(--pink-gray));
+        transform: scale(0);
+      }
+
+      .scroll {
+        position: relative;
+        flex-shrink: 0;
+        width: 100%;
+        height: 28px;
+        border-radius: 7px;
+        background: linear-gradient(
+          to bottom,
+          var(--pink1),
+          var(--pink2),
+          var(--pink2-shadow)
+        );
+        box-shadow: 0 5px 8px var(--pink-gray);
+        z-index: 1;
+      }
+
+      .scroll::before,
+      .scroll::after {
+        content: '';
+        position: absolute;
+        width: 14px;
+        height: 28px;
+        border-radius: 6px;
+        background: linear-gradient(
+          to right,
+          var(--gold-shadow),
+          gold,
+          var(--gold-shadow)
+        );
+      }
+
+      .scroll::before {
+        left: -1px;
+      }
+
+      .scroll::after {
+        right: -1px;
+      }
+
+      .content-area {
+        width: 90%;
+        height: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        background-color: var(--paper);
+        filter: drop-shadow(5px 0 2px var(--pink-gray))
+          drop-shadow(-5px 0 2px var(--pink-gray));
+        overflow: hidden;
+        z-index: 0;
+        padding-block: 10px;
+      }
+
+      .content-area h1 {
+        margin: 16px 12px;
+        color: var(--pink2);
+        font-size: clamp(22px, 5vw, 30px);
+        line-height: 1.25;
+      }
+
+      .content-area > p {
+        margin: 12px 18px 20px;
+        font-size: 16px;
+        line-height: 1.8;
+        overflow-wrap: anywhere;
+      }
+
+      .content-area > div {
+        border: 2px solid var(--pink2);
+        border-radius: 14px;
+        padding: 14px 10px;
+        margin-block: 10px;
+        width: 95%;
+      }
+
+      .yes-or-no > p {
+        margin: 4px 0 18px;
+        font-size: 18px;
+        line-height: 1.5;
+        font-weight: bold;
+        color: var(--pink2-shadow);
+      }
+
+      .yes,
+      .no {
+        border: none;
+        border-radius: 10px;
+        min-height: 60px;
+        min-width: 80px;
+        padding: 12px;
+        font-weight: bold;
+        box-shadow: 0 4px 0 var(--pink-gray);
+      }
+
+      .yes {
+        background-color: lime;
+        color: #183b10;
+      }
+
+      .yes:hover:not(:disabled) {
+        background-color: #a7ff75;
+        transform: translateY(-2px);
+      }
+
+      .no {
+        background-color: red;
+        color: white;
+      }
+
+      .no:hover:not(:disabled) {
+        background-color: #dc2525;
+      }
+
+      .survey {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+
+      textarea {
+        display: block;
+        resize: vertical;
+        width: 100%;
+        min-height: 150px;
+        padding: 12px;
+        border: 2px solid var(--pink1-shadow);
+        border-radius: 10px;
+        background-color: white;
+        color: var(--pink2-shadow);
+        line-height: 1.5;
+      }
+
+      textarea::placeholder {
+        color: #946a74;
+      }
+
+      textarea:focus {
+        border-color: var(--pink2);
+        outline: none;
+      }
+
+      .send,
+      .ok {
+        margin: 10px;
+        border: 2px solid var(--pink2-shadow);
+        border-radius: 10px;
+        color: white;
+        background-color: var(--pink2);
+        padding: 12px 22px;
+        font-weight: bold;
+      }
+
+      .send:hover,
+      .ok:hover {
+        background-color: var(--pink2-shadow);
+      }
+
+      .pop-up {
+        z-index: 11;
+        position: fixed;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 100vh;
+        min-height: 100dvh;
+        padding: 20px;
+        background-color: rgba(70, 25, 70, 0.55);
+        backdrop-filter: blur(4px);
+      }
+
+      .message {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        max-width: 100%;
+        padding: 24px;
+        background-color: var(--pink1);
+        border: 2px solid var(--pink2);
+        border-radius: 20px;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        line-height: 1.6;
+      }
+
+      /*
+   * ANIMATIONS
+   */
+
+      @keyframes gift-shake-animation {
+        10%,
+        30% {
+          transform: rotateZ(8deg) scale(1.05);
+        }
+
+        20%,
+        40% {
+          transform: rotateZ(-8deg) scale(1.05);
+        }
+
+        0%,
+        60% {
+          transform: rotateX(0deg);
+        }
+      }
+
+      .gift-shake {
+        animation-name: gift-shake-animation;
+        animation-duration: 1s;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+      }
+
+      @keyframes gift-top-ascend-animation {
+        to {
+          transform: translateY(-50px);
+        }
+      }
+
+      .gift-lid-ascend {
+        animation-name: gift-top-ascend-animation;
+        animation-duration: 0.5s;
+        animation-timing-function: linear;
+      }
+
+      @keyframes gift-body-descend-animation {
+        to {
+          transform: translateY(150px);
+        }
+      }
+
+      .gift-body-descend {
+        animation-name: gift-body-descend-animation;
+        animation-duration: 0.5s;
+        animation-timing-function: linear;
+      }
+
+      @keyframes unscroll-animation {
+        to {
+          height: 1000px;
+        }
+      }
+
+      .unscroll {
+        animation-name: unscroll-animation;
+        animation-duration: 0.5s;
+      }
+
+      @keyframes fade-out-animation {
+        to {
+          opacity: 0;
+        }
+      }
+
+      .fade-out {
+        animation-name: fade-out-animation;
+        animation-duration: 0.8s;
+        animation-fill-mode: forwards;
+      }
+      @keyframes scale-up-animation {
+        from {
+          transform: scale(0);
+        }
+        to {
+          transform: scale(1);
+        }
+      }
+      .scale-up {
+        animation-name: scale-up-animation;
+        animation-duration: 1s;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="gift-panel">
+      <div class="gift gift-shake">
+        <div class="gift-lid">
+          <div class="gift-ribbon">
+            <div class="gift-ribbon-left"></div>
+            <div class="gift-ribbon-right"></div>
+          </div>
+
+          <div class="gift-top">
+            <div class="gift-top-left"></div>
+            <div class="gift-top-right"></div>
+          </div>
+        </div>
+
+        <div class="gift-bottom">
+          <div class="gift-bottom-left"></div>
+          <div class="gift-bottom-right"></div>
+        </div>
+      </div>
+      <p>Tap mo to pwease🥺</p>
+    </div>
+
+    <div class="main-content">
+      <div class="scroll"></div>
+      <div class="content-area">
+        <h1>Happy Sunday pooooooo!!1!</h1>
+        <p>
+          Hello po hi po hello po hi po hello po hi po hello po hi po hello po
+          hi po hello po hi po hello po hi po hello po hi po hello po hi po
+          hello po hi po hello po hi po hello po hi po hello po hi po hello po
+          hi po hello po hi po hello po hi po hello po hi po hello po hi po
+          hello po hi po hello po hi po hello po hi po hello po hi po hello po
+          crush hi po hello po hi po hello po hi po hello po hi po hello po hi
+          po hello po hi po hello po hi po hello po hi po hello po hi po hello
+          po hi po hello po hi po hello po hi po hello po
+        </p>
+
+        <div class="yes-or-no">
+          <p>Can I get to know you a little better?</p>
+          <button class="yes">Yes</button>
+          <button class="no">No</button>
+        </div>
+
+        <div class="survey">
+          <textarea
+            placeholder="Enter a message you want to say to the creator.."
+          ></textarea>
+          <button class="send">Send</button>
+        </div>
+      </div>
+      <div class="scroll"></div>
+    </div>
+
+    <div class="pop-up">
+      <div class="message">
+        di pa me marunong mag Spring Boot <br />
+        AWHAHAH pasend nalang sa insta pls
+        <br />
+        <button class="ok">Ok</button>
+      </div>
+    </div>
+
+    <script defer>
+      // Gift open logic
+      const giftPanel = document.querySelector('.gift-panel');
+      const giftPanelText = giftPanel.querySelector('p');
+      const gift = document.querySelector('.gift');
+      const giftLid = gift.querySelector('.gift-lid');
+      const giftBody = gift.querySelector('.gift-bottom');
+      const main = document.querySelector('.main-content');
+      const area = document.querySelector('.content-area');
+
+      giftPanel.addEventListener(
+        'click',
+        () => {
+          console.log('gift-open-event');
+
+          gift.classList.remove('gift-shake');
+          giftPanelText.textContent = 'HAHA thanku boss!';
+          giftPanelText.classList.add('fade-out');
+          giftLid.classList.add('gift-lid-ascend');
+          giftBody.classList.add('gift-body-descend');
+
+            main.classList.add('scale-up');
+            main.style.transform = 'scale(1)';
+          setTimeout(() => {
+            giftLid.style.transform = 'translateY(-50px)';
+            giftBody.style.transform = 'translateY(150px)';
+            giftPanel.classList.add('fade-out');
+          }, 500);
+
+          setTimeout(() => {
+            console.log('gift-remove-event');
+            giftPanel.style.display = 'none';
+          }, 1300);
+
+          setTimeout(() => {
+
+            area.style.height = 'max-content';
+            const fullHeight = area.offsetHeight;
+
+            area.style.height = '0px';
+            area.offsetHeight; // force reflow sotransition runs NOT USELESS DO NOT REMOVE DAVEEEE
+            area.style.transition = 'height 0.5s linear';
+            area.style.height = fullHeight + 'px';
+
+            area.addEventListener(
+              'transitionend',
+              () => {
+                area.style.transition = 'none';
+                area.style.height = 'max-content';
+              },
+              { once: true },
+            );
+          }, 1000);
+        },
+        { once: true },
+      );
+
+      // yes or no
+      const yesBtn = document.querySelector('.yes');
+      const noBtn = document.querySelector('.no');
+
+      let noClicks = 0;
+
+      yesBtn.addEventListener(
+        'click',
+        () => {
+          noBtn.disabled = true;
+          noBtn.style.backgroundColor = 'gray';
+          yesBtn.textContent = 'yehey💗😊🎉';
+          console.log('subject-accept-event');
+        },
+        { once: true },
+      );
+
+      noBtn.addEventListener('click', () => {
+        noClicks++;
+        if (noClicks === 4) {
+          noBtn.disabled = true;
+          noBtn.style.backgroundColor = 'gray';
+          noBtn.textContent = 'okay😢';
+
+          yesBtn.disabled = true;
+          yesBtn.style.backgroundColor = 'gray';
+          yesBtn.textContent = '😢😢😢😢😢';
+
+          console.log('subject-decline-event');
+
+          return;
+        }
+
+        noBtn.style.width =
+          parseFloat(getComputedStyle(noBtn).width) - 10 + 'px';
+        noBtn.style.height =
+          parseFloat(getComputedStyle(noBtn).height) - 10 + 'px';
+        yesBtn.style.width =
+          parseFloat(getComputedStyle(yesBtn).width) + 10 + 'px';
+
+        if (noClicks === 3) {
+          const rect = noBtn.getBoundingClientRect();
+
+          // move button out of container
+          document.body.appendChild(noBtn);
+
+          noBtn.style.position = 'absolute';
+          noBtn.style.margin = '0';
+          noBtn.style.zIndex = '10';
+          noBtn.style.top = rect.top + window.scrollY + 'px';
+          noBtn.style.left = rect.left + window.scrollX + 'px';
+          noBtn.style.transition = 'top 0.8s';
+
+          noBtn.getBoundingClientRect(); // force reflow so transition runs
+
+          noBtn.style.top = '0px';
+          yesBtn.style.width = '200px';
+        }
+      });
+
+      //survey
+      const sendBtn = document.querySelector('.send');
+      const popUp = document.querySelector('.pop-up');
+      const okBtn = document.querySelector('.ok');
+
+      sendBtn.addEventListener('click', () => {
+        popUp.style.display = 'flex';
+      });
+
+      okBtn.addEventListener('click', () => {
+        popUp.style.display = 'none';
+      });
+    </script>
+  </body>
+</html>
